@@ -1,0 +1,62 @@
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { fetchTodos, createTodo, updateTodo, deleteTodo } from '../services/api';
+import TodoItem from './TodoItem';
+import TodoForm from './TodoForm';
+
+const socket = require('socket.io-client')('http://localhost:5000');
+
+function TodoList() {
+  const { token, logout } = useAuth();
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const loadTodos = async () => {
+      const res = await fetchTodos();
+      setTodos(res.data);
+    };
+
+    loadTodos();
+
+    socket.on('receiveUpdate', (updatedTodos) => {
+      setTodos(updatedTodos);
+    });
+
+    return () => socket.off('receiveUpdate');
+  }, [token]);
+
+  const addTodo = async (title) => {
+    const res = await createTodo({ title });
+    socket.emit('updateTodos', [...todos, res.data]);
+  };
+
+  const toggleComplete = async (todo) => {
+    const updated = { ...todo, completed: !todo.completed };
+    const res = await updateTodo(todo._id, updated);
+    const newTodos = todos.map((t) => (t._id === todo._id ? res.data : t));
+    socket.emit('updateTodos', newTodos);
+  };
+
+  const removeTodo = async (id) => {
+    await deleteTodo(id);
+    const newTodos = todos.filter((t) => t._id !== id);
+    socket.emit('updateTodos', newTodos);
+  };
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Your To-Dos</h1>
+      <button onClick={logout} className="mb-4 text-red-500">Logout</button>
+      <TodoForm onSubmit={addTodo} />
+      <ul>
+        {todos.map((todo) => (
+          <TodoItem key={todo._id} todo={todo} onToggle={toggleComplete} onDelete={removeTodo} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default TodoList;

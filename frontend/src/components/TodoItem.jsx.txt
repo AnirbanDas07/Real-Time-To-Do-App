@@ -1,0 +1,17 @@
+import React from 'react';
+
+function TodoItem({ todo, onToggle, onDelete }) {
+  return (
+    <li className="flex justify-between items-center py-2 border-b">
+      <span
+        onClick={() => onToggle(todo)}
+        className={`cursor-pointer ${todo.completed ? 'line-through text-gray-400' : ''}`}
+      >
+        {todo.title}
+      </span>
+      <button onClick={() => onDelete(todo._id)} className="text-red-500">X</button>
+    </li>
+  );
+}
+
+export default TodoItem;

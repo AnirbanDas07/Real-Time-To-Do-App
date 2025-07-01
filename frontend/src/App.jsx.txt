@@ -1,0 +1,22 @@
+import React from 'react';
+import { AuthProvider } from './context/AuthContext';
+import TodoList from './components/TodoList';
+import Login from './components/Login';
+import Register from './components/Register';
+
+function App() {
+  return (
+    <AuthProvider>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-full max-w-md p-6 bg-white rounded shadow">
+          {/* Uncomment one of the following */}
+          {/* <Login /> */}
+          {/* <Register /> */}
+          <TodoList />
+        </div>
+      </div>
+    </AuthProvider>
+  );
+}
+
+export default App;

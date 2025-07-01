@@ -1,0 +1,33 @@
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+const api = axios.create({ baseURL: API_URL });
+
+export const createTodo = async (todo) => {
+  const token = localStorage.getItem('token');
+  return api.post('/todos', todo, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+export const fetchTodos = async () => {
+  const token = localStorage.getItem('token');
+  return api.get('/todos', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+export const updateTodo = async (id, updated) => {
+  const token = localStorage.getItem('token');
+  return api.put(`/todos/${id}`, updated, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+export const deleteTodo = async (id) => {
+  const token = localStorage.getItem('token');
+  return api.delete(`/todos/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};

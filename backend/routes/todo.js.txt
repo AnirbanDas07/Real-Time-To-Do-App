@@ -1,0 +1,13 @@
+const express = require('express');
+const router = express.Router();
+const todoCtrl = require('../controllers/todoController');
+const authJwt = require('../utils/authJwt');
+
+router.use(authJwt.verifyToken);
+
+router.post('/', todoCtrl.create);
+router.get('/', todoCtrl.getAll);
+router.put('/:id', todoCtrl.update);
+router.delete('/:id', todoCtrl.delete);
+
+module.exports = router;
